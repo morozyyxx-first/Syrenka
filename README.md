@@ -1,3 +1,15 @@
+# Nazwa projektu - Syrenka
+## Nazwa zespołu - 2nd Wind
+## Nazwa i numer zespołu - 2ndWind 11
+
+# Clone the repository: git clone https://github.com/morozyyxx-first/syrenka.git
+# cd syrenka
+
+# Install dependencies: npm install
+# Running the application: npm run dev
+
+# Once started, open your web browser and navigate to http://localhost:3000
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
