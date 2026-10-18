@@ -1,14 +1,19 @@
 # Nazwa projektu - Syrenka
-## Nazwa zespołu - 2nd Wind
-## Nazwa i numer zespołu - 2ndWind 11
+Nazwa zespołu - 2nd Wind
+Nazwa i numer zespołu - 2ndWind 11
 
-# Clone the repository: git clone https://github.com/morozyyxx-first/syrenka.git
-# cd syrenka
+# Clone the repository
+git clone https://github.com/morozyyxx-first/syrenka.git
 
-# Install dependencies: npm install
-# Running the application: npm run dev
+cd syrenka
 
-# Once started, open your web browser and navigate to http://localhost:3000
+# Install dependencies
+npm install
+
+# Running the application
+npm run dev
+
+Once started, open your web browser and navigate to http://localhost:3000
 
 # React + Vite
 
