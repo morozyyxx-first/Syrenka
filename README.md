@@ -1,5 +1,5 @@
-# Nazwa projektu - Syrenka
-Nazwa i numer zespołu - 2ndWind 11
+# Project name - Syrenka
+Title and team number - 2ndWind 11
 
 # Clone the repository
 git clone https://github.com/morozyyxx-first/syrenka.git
