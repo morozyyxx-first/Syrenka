@@ -1,61 +1,63 @@
 const UPSTREAM_EVENTS_URL = 'https://dane.um.warszawa.pl/api/action/get_bmm_kalendarz_wydarzen'
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 
-export default {
-    async fetch(request) {
-        if (request.method !== 'POST') {
-            return Response.json(
-                { error: 'Method not allowed.' },
-                { status: 405, headers: { Allow: 'POST' } }
-            )
-        }
+function sendJson(response, status, body, headers = {}) {
+    response.statusCode = status
+    response.setHeader('Content-Type', 'application/json')
+    for (const [name, value] of Object.entries(headers)) {
+        response.setHeader(name, value)
+    }
+    response.end(JSON.stringify(body))
+}
 
-        const apiKey = process.env.API_KEY
-        if (!apiKey) {
-            return Response.json(
-                { error: 'The event service is not configured.' },
-                { status: 500 }
-            )
-        }
+export default async function handler(request, response) {
+    if (request.method !== 'POST') {
+        sendJson(response, 405, { error: 'Method not allowed.' }, { Allow: 'POST' })
+        return
+    }
 
-        const requestUrl = new URL(request.url)
-        const from = requestUrl.searchParams.get('from')
-        const to = requestUrl.searchParams.get('to')
-        if (!from || !DATE_PATTERN.test(from) || !to || !DATE_PATTERN.test(to)) {
-            return Response.json(
-                { error: 'Valid from and to dates are required.' },
-                { status: 400 }
-            )
-        }
+    const apiKey = process.env.API_KEY
+    if (!apiKey) {
+        sendJson(response, 500, { error: 'The event service is not configured.' })
+        return
+    }
 
-        const upstreamUrl = new URL(UPSTREAM_EVENTS_URL)
-        upstreamUrl.searchParams.set('from', from)
-        upstreamUrl.searchParams.set('to', to)
+    const requestUrl = new URL(request.url, 'http://localhost')
+    const from = requestUrl.searchParams.get('from')
+    const to = requestUrl.searchParams.get('to')
+    if (!from || !DATE_PATTERN.test(from) || !to || !DATE_PATTERN.test(to)) {
+        sendJson(response, 400, { error: 'Valid from and to dates are required.' })
+        return
+    }
 
-        try {
-            const upstreamResponse = await fetch(upstreamUrl, {
-                method: 'POST',
-                headers: {
-                    Authorization: apiKey,
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-            })
-            const body = await upstreamResponse.text()
-            const headers = new Headers({
-                'Cache-Control': 'no-store',
-                'Content-Type': upstreamResponse.headers.get('content-type') || 'application/json',
-            })
+    const upstreamUrl = new URL(UPSTREAM_EVENTS_URL)
+    upstreamUrl.searchParams.set('from', from)
+    upstreamUrl.searchParams.set('to', to)
 
-            return new Response(body || null, {
-                status: upstreamResponse.status,
-                headers,
-            })
-        } catch {
-            return Response.json(
-                { error: 'Could not fetch events from the event service.' },
-                { status: 502, headers: { 'Cache-Control': 'no-store' } }
-            )
-        }
-    },
+    try {
+        const upstreamResponse = await fetch(upstreamUrl, {
+            method: 'POST',
+            headers: {
+                Authorization: apiKey,
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        })
+        const body = await upstreamResponse.text()
+
+        response.statusCode = upstreamResponse.status
+        response.setHeader('Cache-Control', 'no-store')
+        response.setHeader(
+            'Content-Type',
+            upstreamResponse.headers.get('content-type') || 'application/json'
+        )
+        response.end(body)
+    } catch {
+        sendJson(
+            response,
+            502,
+            { error: 'Could not fetch events from the event service.' },
+            { 'Cache-Control': 'no-store' }
+        )
+    }
 }
