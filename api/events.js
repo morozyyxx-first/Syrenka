@@ -52,7 +52,8 @@ export default async function handler(request, response) {
             upstreamResponse.headers.get('content-type') || 'application/json'
         )
         response.end(body)
-    } catch {
+    } catch (error) {
+        console.error('Event API upstream request failed:', error)
         sendJson(
             response,
             502,
