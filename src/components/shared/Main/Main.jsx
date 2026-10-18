@@ -5,6 +5,7 @@ import DislikeBackground from './assets/figma/dislike-background.svg'
 import DislikeLeft from './assets/figma/dislike-left.svg'
 import DislikeRight from './assets/figma/dislike-right.svg'
 import MoreInfoIcon from './assets/figma/more-info.svg'
+import Preferences from '../Preferences/Preferences.jsx'
 import { FetchData } from './functions.jsx'
 import './Main_style.css'
 
@@ -320,6 +321,7 @@ function Main({ activeView, likedEvents, onLikeEvent }) {
     }, [])
 
     const isLikedView = activeView === 'liked'
+    const isPreferencesView = activeView === 'preferences'
     const locatedEvents = userLocation
         ? events.filter((event) => hasEventPhoto(event) && !failedImageUrls.has(event.image) && distanceInKilometers(userLocation, event) !== null)
         : []
@@ -455,9 +457,11 @@ function Main({ activeView, likedEvents, onLikeEvent }) {
             <div
                 id="cards-div"
                 ref={cardsContainerRef}
-                className={isLikedView ? 'liked-events-container' : undefined}
+                className={isLikedView ? 'liked-events-container' : isPreferencesView ? 'preferences-container' : undefined}
             >
-                {isLoading || (!isLikedView && !isLocationResolved) ? (
+                {isPreferencesView ? (
+                    <Preferences />
+                ) : isLoading || (!isLikedView && !isLocationResolved) ? (
                     <p className="cards-message">Ładowanie wydarzeń...</p>
                 ) : error ? (
                     <p className="cards-message" role="alert">{error}</p>
@@ -538,7 +542,7 @@ function Main({ activeView, likedEvents, onLikeEvent }) {
                     <p className="cards-message">Nie ma więcej wydarzeń.</p>
                 )}
             </div>
-            {(!isLikedView || selectedLikedEvent) && (
+            {!isPreferencesView && (!isLikedView || selectedLikedEvent) && (
                 <div className="card-actions">
                     {isLikedView ? (
                         <button

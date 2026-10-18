@@ -27,10 +27,7 @@ function App() {
             </div>
             <Header
                 activeView={activeView}
-                likedCount={likedEvents.length}
-                onToggleView={() =>
-                    setActiveView((view) => view === 'discover' ? 'liked' : 'discover')
-                }
+                onChangeView={setActiveView}
             />
             <Main
                 activeView={activeView}
