@@ -1,5 +1,4 @@
 # Nazwa projektu - Syrenka
-Nazwa zespołu - 2nd Wind
 Nazwa i numer zespołu - 2ndWind 11
 
 # Clone the repository
