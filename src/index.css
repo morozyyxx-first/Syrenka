@@ -21,9 +21,50 @@ body {
 }
 
 #root {
+  position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   min-height: 100vh;
+}
+
+.siren-background {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #871638 0%, #4e1023 100%);
+  pointer-events: none;
+}
+
+.siren-background::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='.4'/%3E%3C/svg%3E");
+  content: '';
+  opacity: 0.24;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.siren-background img {
+  position: absolute;
+  z-index: 1;
+  top: 2.78%;
+  width: min(25.3vw, 45vh);
+  height: auto;
+  aspect-ratio: 485.657 / 1058.83;
+  object-fit: contain;
+}
+
+.siren-background-left {
+  left: 4.64%;
+}
+
+.siren-background-right {
+  right: 4.65%;
+  transform: scaleX(-1);
 }

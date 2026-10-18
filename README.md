@@ -2,6 +2,14 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
+## Event API configuration
+
+The event API credential is read server-side as `API_KEY`. Do not add a `VITE_` prefix: Vite exposes prefixed variables to browser code.
+
+- In Vercel, add `API_KEY` under **Project Settings → Environment Variables**, set its type to **Secret**, and select the environments you deploy to.
+- For local development, add `API_KEY=...` to the root `.env.local` file. `.env.local` is ignored by Git.
+- Deploy again after changing the Vercel variable. The `/api/events` Vercel Function uses the key to call the upstream events API.
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)

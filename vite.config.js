@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: () => '/api/action/get_bmm_kalendarz_wydarzen',
           headers: {
-            Authorization: env.VITE_API_KEY,
+            Authorization: env.API_KEY,
           },
         },
       },

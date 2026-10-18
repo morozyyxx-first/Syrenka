@@ -7,7 +7,7 @@ const FIELD_ALIASES = {
         "image", "image_url", "imageurl", "image_display_url", "photo", "photo_url",
         "picture", "picture_url", "img", "img_url", "src", "thumbnail", "thumbnail_url",
         "media", "images", "zdjecie", "zdjecia", "zdjecie_url", "url_zdjecia",
-        "link_do_zdjecia", "fotografia", "grafika", "url"
+        "link_do_zdjecia", "fotografia", "grafika"
     ],
     category: ["category", "type", "kategoria", "typ"],
     from: ["from", "date_from", "start", "start_date", "data_od", "data_rozpoczecia"],
@@ -71,9 +71,12 @@ function getFieldValue(record, aliases) {
     return null;
 }
 
-function findImageValue(value) {
+const IMAGE_FIELD_KEYS = new Set(FIELD_ALIASES.image.map(normalizeKey));
+const IMAGE_URL_KEYS = ["url", "href", "src", "path", "download_url", "image_url", "imageUrl"];
+
+function findImageValue(value, isImageField = false) {
     if (typeof value === "string") {
-        return value;
+        return isImageField ? value : null;
     }
 
     if (!value || typeof value !== "object") {
@@ -82,7 +85,7 @@ function findImageValue(value) {
 
     if (Array.isArray(value)) {
         for (const item of value) {
-            const image = findImageValue(item);
+            const image = findImageValue(item, isImageField);
             if (image) {
                 return image;
             }
@@ -90,16 +93,27 @@ function findImageValue(value) {
         return null;
     }
 
-    for (const key of ["url", "href", "src", "path", "download_url", "image_url", "imageUrl"]) {
-        if (typeof value[key] === "string" && value[key].trim()) {
-            return value[key];
+    if (isImageField) {
+        for (const key of IMAGE_URL_KEYS) {
+            if (typeof value[key] === "string" && value[key].trim()) {
+                return value[key];
+            }
+        }
+
+        for (const item of Object.values(value)) {
+            const image = findImageValue(item, true);
+            if (image) {
+                return image;
+            }
         }
     }
 
-    for (const item of Object.values(value)) {
-        const image = findImageValue(item);
-        if (image) {
-            return image;
+    for (const [key, item] of Object.entries(value)) {
+        if (IMAGE_FIELD_KEYS.has(normalizeKey(key))) {
+            const image = findImageValue(item, true);
+            if (image) {
+                return image;
+            }
         }
     }
 
@@ -158,7 +172,7 @@ function toDisplayValue(value, field) {
         }
 
         if (typeof value === "object") {
-            const imageValue = findImageValue(value);
+            const imageValue = findImageValue(value, true);
             return imageValue == null ? null : toDisplayValue(imageValue, field);
         }
 
