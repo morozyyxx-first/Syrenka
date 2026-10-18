@@ -1,0 +1,97 @@
+header {
+    display: flex;
+    background: black;
+    border: 1px solid white;
+    border-radius: 20px;
+    box-shadow: 0 0 10px white;
+    width: 100vh;
+    margin: 15px;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+header #logo-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin-right: auto;
+}
+
+header #logo-div img{
+    width: 50px;
+    height: 50px;
+    background: white;
+    border: 1px solid white;
+    border-radius: 20px;
+    padding: 5px;
+    box-shadow: 0 0 10px deepskyblue;
+    transition: 0.3s ease-in-out all;
+}
+header #logo-div img:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 30px deepskyblue;
+    cursor: pointer;
+}
+
+header #logo-div h1{
+    font-size: 35px;
+    color: white;
+    margin-left: 10px;
+}
+
+header button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 20px;
+    box-shadow: 0 0 20px deepskyblue;
+    background: white;
+    color: black;
+    transition: 0.4s ease-in-out all;
+}
+header button:hover {
+    transform: scale(1.1);
+    color: white;
+    background: black;
+    box-shadow: 0 0 20px red;
+    cursor: pointer;
+}
+
+header button.is-active {
+    color: white;
+    background: black;
+    box-shadow: 0 0 20px red;
+}
+
+header .header-btn-img {
+    width: 30px;
+    height: 30px;
+    background: black;
+    padding: 5px;
+    border: 1px solid white;
+    border-radius: 30px;
+}
+
+header button label {
+    margin: 10px;
+}
+
+header button span {
+    margin: 0 5px;
+}
+
+header button .liked-count {
+    display: grid;
+    min-width: 24px;
+    height: 24px;
+    place-items: center;
+    border-radius: 50%;
+    background: #e11d48;
+    color: white;
+    font-size: 0.8rem;
+}

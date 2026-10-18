@@ -1,0 +1,267 @@
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    margin-top: 40px;
+}
+
+main #cards-div {
+    position: relative;
+    width: 40%;
+    height: 100%;
+    margin: 20px;
+    border: 1px solid white;
+    border-radius: 25px;
+    box-shadow: 0 0 20px deepskyblue;
+    overflow: hidden;
+    background: #171717;
+}
+
+.event-card {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: linear-gradient(145deg, #333, #111);
+    animation: card-arrive 500ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.event-card-image {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: image-arrive 800ms ease-out both;
+}
+
+.event-card-image.image-load-failed {
+    display: none;
+}
+
+.event-card::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    content: "";
+    pointer-events: none;
+    background: linear-gradient(transparent 25%, rgb(0 0 0 / 85%) 100%);
+}
+
+.event-card-content {
+    position: absolute;
+    z-index: 2;
+    inset: auto 0 0;
+    max-height: 100%;
+    padding: 28px;
+    color: white;
+}
+
+.event-card-content.is-expanded {
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background: linear-gradient(transparent 0%, rgb(0 0 0 / 90%) 35%);
+    animation: details-backdrop-in 250ms ease-out both;
+}
+
+.event-card-summary h1 {
+    margin: 8px 0;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+}
+
+.event-category {
+    display: inline-block;
+    padding: 6px 10px;
+    border: 1px solid rgb(255 255 255 / 65%);
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.event-description {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 8px 0;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+}
+
+.see-more-button {
+    padding: 8px 0;
+    border: 0;
+    background: transparent;
+    color: white;
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.event-details {
+    overflow-y: auto;
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgb(255 255 255 / 45%);
+    animation: details-in 300ms ease-out both;
+}
+
+.event-detail {
+    margin: 8px 0;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.cards-message {
+    display: grid;
+    height: 100%;
+    margin: 0;
+    padding: 24px;
+    place-items: center;
+    color: white;
+    text-align: center;
+}
+
+main #buttons-div {
+    display: flex;
+    background: black;
+    width: 12vh;
+    border: 8px double white;
+    border-radius: 30px;
+    padding: 20px;
+    box-shadow: 0 0 20px deepskyblue;
+    transition: 0.3s ease-in-out all;
+}
+main #buttons-div:hover {
+    transform: scale(0.9);
+}
+
+main #buttons-div img {
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+}
+
+.liked-navigation-label {
+    display: grid;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    color: white;
+    font-size: 2rem;
+    line-height: 1;
+}
+
+main #buttons-div #red-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: red;
+    color: white;
+    border: 1px solid white;
+    border-radius: 30px;
+    box-shadow: 0 0 8px white;
+    margin-right: auto;
+    transition: 0.2s ease-in-out all;
+}
+main #buttons-div #red-btn:hover {
+    transform: scale(1.4);
+    box-shadow: 0 0 20px white;
+    cursor: pointer;
+}
+
+main #buttons-div #green-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: green;
+    color: white;
+    border: 1px solid white;
+    border-radius: 30px;
+    box-shadow: 0 0 8px white;
+    transition: 0.2s ease-in-out all;
+}
+main #buttons-div #green-btn:hover {
+    transform: scale(1.4);
+    box-shadow: 0 0 20px white;
+    cursor: pointer;
+}
+
+main #buttons-div button:active {
+    transform: scale(0.9);
+}
+
+main #buttons-div button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+@keyframes card-arrive {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.96) rotate(1deg);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0);
+    }
+}
+
+@keyframes image-arrive {
+    from {
+        opacity: 0;
+        transform: scale(1.06);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes details-backdrop-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes details-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 700px) {
+    main {
+        height: 70vh;
+        margin-top: 20px;
+    }
+
+    main #cards-div {
+        width: min(90%, 440px);
+    }
+
+    .event-card-content {
+        padding: 20px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}

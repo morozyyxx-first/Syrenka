@@ -1,0 +1,202 @@
+const FIELD_ALIASES = {
+    title: ["title", "name", "event_name", "nazwa", "tytul"],
+    text: ["text", "description", "content", "opis", "description_short"],
+    address: ["address", "adres", "street", "ulica", "adres_wydarzenia"],
+    localization: ["localization", "location", "lokalizacja", "miejsce", "venue", "place"],
+    image: [
+        "image", "image_url", "imageurl", "image_display_url", "photo", "photo_url",
+        "picture", "picture_url", "img", "img_url", "src", "thumbnail", "thumbnail_url",
+        "media", "images", "zdjecie", "zdjecia", "zdjecie_url", "url_zdjecia",
+        "link_do_zdjecia", "fotografia", "grafika", "url"
+    ],
+    category: ["category", "type", "kategoria", "typ"],
+    from: ["from", "date_from", "start", "start_date", "data_od", "data_rozpoczecia"],
+    to: ["to", "date_to", "end", "end_date", "data_do", "data_zakonczenia"]
+};
+
+function normalizeKey(key) {
+    return key
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+}
+
+function getRecords(payload) {
+    if (Array.isArray(payload)) {
+        return payload;
+    }
+
+    if (payload && typeof payload === "object") {
+        for (const key of ["result", "data", "records", "items", "events"]) {
+            if (payload[key] !== undefined) {
+                const records = getRecords(payload[key]);
+                if (records) {
+                    return records;
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+function getFieldValue(record, aliases) {
+    if (!record || typeof record !== "object") {
+        return null;
+    }
+
+    const normalizedAliases = new Set(aliases.map(normalizeKey));
+    const sources = [
+        record,
+        record.attributes,
+        record.properties,
+        record.fields
+    ];
+
+    for (const source of sources) {
+        if (!source || typeof source !== "object" || Array.isArray(source)) {
+            continue;
+        }
+
+        for (const [key, value] of Object.entries(source)) {
+            if (normalizedAliases.has(normalizeKey(key)) && value != null) {
+                return value;
+            }
+        }
+    }
+
+    return null;
+}
+
+function findImageValue(value) {
+    if (typeof value === "string") {
+        return value;
+    }
+
+    if (!value || typeof value !== "object") {
+        return null;
+    }
+
+    if (Array.isArray(value)) {
+        for (const item of value) {
+            const image = findImageValue(item);
+            if (image) {
+                return image;
+            }
+        }
+        return null;
+    }
+
+    for (const key of ["url", "href", "src", "path", "download_url", "image_url", "imageUrl"]) {
+        if (typeof value[key] === "string" && value[key].trim()) {
+            return value[key];
+        }
+    }
+
+    for (const item of Object.values(value)) {
+        const image = findImageValue(item);
+        if (image) {
+            return image;
+        }
+    }
+
+    return null;
+}
+
+function normalizeImageUrl(value) {
+    if (typeof value !== "string") {
+        return null;
+    }
+
+    const htmlImage = value.match(/<img[^>]+src=["']([^"']+)["']/i);
+    const imageUrl = (htmlImage?.[1] ?? value).trim();
+    if (!imageUrl) {
+        return null;
+    }
+
+    if (/^(data:|blob:)/i.test(imageUrl)) {
+        return imageUrl;
+    }
+
+    try {
+        const url = new URL(imageUrl, "https://dane.um.warszawa.pl/");
+        if (url.protocol === "http:" && url.hostname === "um.warszawa.pl") {
+            url.protocol = "https:";
+        }
+        return url.toString();
+    } catch {
+        return null;
+    }
+}
+
+function toDisplayValue(value, field) {
+    if (value == null) {
+        return null;
+    }
+
+    if (field === "image") {
+        if (Array.isArray(value)) {
+            for (const item of value) {
+                const image = toDisplayValue(item, field);
+                if (image) {
+                    return image;
+                }
+            }
+            return null;
+        }
+
+        if (typeof value === "object") {
+            const imageValue = findImageValue(value);
+            return imageValue == null ? null : toDisplayValue(imageValue, field);
+        }
+
+        return normalizeImageUrl(String(value));
+    }
+
+    if (Array.isArray(value)) {
+        return toDisplayValue(value[0], field);
+    }
+
+    if (typeof value === "object") {
+        const objectValue = field === "image"
+            ? value.url ?? value.href ?? value.src
+            : value.name ?? value.value ?? value.label ?? value.address;
+        return objectValue == null ? null : toDisplayValue(objectValue, field);
+    }
+
+    return String(value);
+}
+
+function normalizeEvent(record) {
+    const image = getFieldValue(record, FIELD_ALIASES.image) ?? findImageValue(record);
+
+    return Object.fromEntries(
+        Object.entries(FIELD_ALIASES).map(([field, aliases]) => [
+            field,
+            toDisplayValue(field === "image" ? image : getFieldValue(record, aliases), field)
+        ])
+    );
+}
+
+export async function FetchData() {
+    const response = await fetch("/api/events", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch events: ${response.status} ${response.statusText}`);
+    }
+
+    const payload = await response.json();
+    const records = getRecords(payload);
+
+    if (!records) {
+        throw new TypeError("The events API response does not contain a records array.");
+    }
+
+    return records.map(normalizeEvent);
+}
