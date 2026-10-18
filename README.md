@@ -1,5 +1,5 @@
 # Project name - Syrenka
-Title and team number - 2ndWind 11
+Title and team number - 2nd Wind nr. 11
 
 # Clone the repository
 git clone https://github.com/morozyyxx-first/syrenka.git
