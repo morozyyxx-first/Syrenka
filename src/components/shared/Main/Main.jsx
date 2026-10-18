@@ -200,7 +200,7 @@ function hasEventPhoto(event) {
     return typeof event.image === 'string' && event.image.trim().length > 0
 }
 
-function EventCard({ event, distance, isExpanded, swipeStyle, swipeHandlers }) {
+function EventCard({ event, distance, isExpanded, swipeStyle, swipeHandlers, onImageLoadError }) {
     const location = event.localization || event.address
 
     return (
@@ -217,19 +217,21 @@ function EventCard({ event, distance, isExpanded, swipeStyle, swipeHandlers }) {
                     draggable="false"
                     referrerPolicy="no-referrer"
                     loading="eager"
-                    onError={(imageEvent) => {
-                        imageEvent.currentTarget.classList.add('image-load-failed')
-                    }}
+                    onError={() => onImageLoadError?.(event.image)}
                 />
             ) : <div className="event-card-image-placeholder" aria-hidden="true" />}
             <div className={`event-card-content${isExpanded ? ' is-expanded' : ''}`}>
                 <div className="event-card-summary">
-                    {location && <span className="event-location-label">{location}</span>}
+                    {(location || event.category) && (
+                        <div className="event-card-topline">
+                            {location && <span className="event-location-label">{location}</span>}
+                            {event.category && <span className="event-card-category">{event.category}</span>}
+                        </div>
+                    )}
                     <h1>{event.title || 'Wydarzenie bez nazwy'}</h1>
                 </div>
                 {isExpanded && (
                     <div className="event-details" key="event-details">
-                        {renderDetail('Kategoria', event.category)}
                         {renderDetail('Lokalizacja', event.localization)}
                         {renderDetail('Adres', event.address)}
                         {event.text && (
@@ -269,6 +271,7 @@ function Main({ activeView, likedEvents, onLikeEvent }) {
     const [isDragging, setIsDragging] = useState(false)
     const [isCardTransitioning, setIsCardTransitioning] = useState(false)
     const [isPromotingShadow, setIsPromotingShadow] = useState(false)
+    const [failedImageUrls, setFailedImageUrls] = useState(() => new Set())
     const cardsContainerRef = useRef(null)
     const gestureRef = useRef(null)
     const transitionLockRef = useRef(false)
@@ -318,10 +321,10 @@ function Main({ activeView, likedEvents, onLikeEvent }) {
 
     const isLikedView = activeView === 'liked'
     const locatedEvents = userLocation
-        ? events.filter((event) => hasEventPhoto(event) && distanceInKilometers(userLocation, event) !== null)
+        ? events.filter((event) => hasEventPhoto(event) && !failedImageUrls.has(event.image) && distanceInKilometers(userLocation, event) !== null)
         : []
     const currentEvent = locatedEvents[currentIndex]
-    const photoLikedEvents = likedEvents.filter(hasEventPhoto)
+    const photoLikedEvents = likedEvents.filter((event) => hasEventPhoto(event) && !failedImageUrls.has(event.image))
     const likedEventGroups = Object.values(photoLikedEvents.reduce((groups, event) => {
         const dateKey = eventDateKey(event.from) ?? 'undated'
         if (!groups[dateKey]) {
@@ -336,6 +339,18 @@ function Main({ activeView, likedEvents, onLikeEvent }) {
     }, {})).sort((first, second) => first.dateKey.localeCompare(second.dateKey))
 
     useEffect(() => () => clearTimeout(transitionTimerRef.current), [])
+
+    function handleImageLoadError(imageUrl) {
+        setFailedImageUrls((current) => {
+            if (current.has(imageUrl)) {
+                return current
+            }
+
+            return new Set(current).add(imageUrl)
+        })
+        setSelectedLikedEvent((current) => current?.image === imageUrl ? null : current)
+        setIsDetailsExpanded(false)
+    }
 
     function showNextEvent() {
         setIsDetailsExpanded(false)
@@ -454,6 +469,7 @@ function Main({ activeView, likedEvents, onLikeEvent }) {
                         event={selectedLikedEvent}
                         distance={distanceInKilometers(userLocation, selectedLikedEvent)}
                         isExpanded
+                        onImageLoadError={handleImageLoadError}
                     />
                 ) : isLikedView ? (
                     <div className="liked-events-list">
@@ -509,6 +525,7 @@ function Main({ activeView, likedEvents, onLikeEvent }) {
                             isExpanded={isDetailsExpanded}
                             swipeStyle={currentCardStyle}
                             swipeHandlers={activeSwipeHandlers}
+                            onImageLoadError={handleImageLoadError}
                         />
                     </>
                 ) : !isLikedView && !userLocation ? (
