@@ -1,88 +1,80 @@
 header {
+    box-sizing: border-box;
     display: flex;
-    background: black;
-    border: 1px solid white;
-    border-radius: 20px;
-    box-shadow: 0 0 10px white;
-    width: 100vh;
-    margin: 15px;
-    padding: 20px;
-    justify-content: center;
     align-items: center;
+    width: min(calc(100% - 32px), 1280px);
+    margin: 12px auto 0;
+    padding: 10px 20px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
 }
 
 header #logo-div {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px;
     margin-right: auto;
+    padding: 4px;
 }
 
-header #logo-div img{
+header #logo-div img {
     width: 50px;
     height: 50px;
-    background: white;
-    border: 1px solid white;
-    border-radius: 20px;
     padding: 5px;
-    box-shadow: 0 0 10px deepskyblue;
-    transition: 0.3s ease-in-out all;
-}
-header #logo-div img:hover {
-    transform: scale(1.2);
-    box-shadow: 0 0 30px deepskyblue;
-    cursor: pointer;
+    border: 1px solid #ebd4cb;
+    border-radius: 18px;
+    background: #ebd4cb;
+    transition: transform 180ms ease;
 }
 
-header #logo-div h1{
-    font-size: 35px;
-    color: white;
-    margin-left: 10px;
+header #logo-div img:hover {
+    transform: scale(1.06);
+}
+
+header #logo-div h1 {
+    margin: 0 0 0 10px;
+    color: #fff7f0;
+    font-size: 1.8rem;
 }
 
 header button {
+    position: static;
     display: flex;
-    justify-content: center;
     align-items: center;
-    position: absolute;
-    padding: 10px;
-    border: 1px solid white;
-    border-radius: 20px;
-    box-shadow: 0 0 20px deepskyblue;
-    background: white;
-    color: black;
-    transition: 0.4s ease-in-out all;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid rgb(235 212 203 / 70%);
+    border-radius: 999px;
+    background: #871638;
+    color: #fff7f0;
+    font: inherit;
+    transition: background-color 180ms ease, transform 180ms ease;
 }
+
 header button:hover {
-    transform: scale(1.1);
-    color: white;
-    background: black;
-    box-shadow: 0 0 20px red;
+    transform: translateY(-1px);
+    background: #a11a42;
     cursor: pointer;
 }
 
 header button.is-active {
-    color: white;
-    background: black;
-    box-shadow: 0 0 20px red;
+    background: #ebd4cb;
+    color: #871638;
 }
 
 header .header-btn-img {
-    width: 30px;
-    height: 30px;
-    background: black;
-    padding: 5px;
-    border: 1px solid white;
-    border-radius: 30px;
-}
-
-header button label {
-    margin: 10px;
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+    border: 1px solid rgb(235 212 203 / 50%);
+    border-radius: 50%;
+    background: #2c0712;
 }
 
 header button span {
-    margin: 0 5px;
+    margin: 0;
 }
 
 header button .liked-count {
@@ -91,7 +83,29 @@ header button .liked-count {
     height: 24px;
     place-items: center;
     border-radius: 50%;
-    background: #e11d48;
-    color: white;
+    background: #2c0712;
+    color: #fff7f0;
     font-size: 0.8rem;
+}
+
+@media (max-width: 700px) {
+    header {
+        width: calc(100% - 24px);
+        padding: 8px 4px;
+    }
+
+    header #logo-div img {
+        width: 42px;
+        height: 42px;
+    }
+
+    header #logo-div h1 {
+        font-size: 1.4rem;
+    }
+
+    header button {
+        gap: 6px;
+        padding: 8px 10px;
+        font-size: 0.82rem;
+    }
 }

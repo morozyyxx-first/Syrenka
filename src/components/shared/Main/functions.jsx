@@ -11,7 +11,9 @@ const FIELD_ALIASES = {
     ],
     category: ["category", "type", "kategoria", "typ"],
     from: ["from", "date_from", "start", "start_date", "data_od", "data_rozpoczecia"],
-    to: ["to", "date_to", "end", "end_date", "data_do", "data_zakonczenia"]
+    to: ["to", "date_to", "end", "end_date", "data_do", "data_zakonczenia"],
+    latitude: ["latitude", "lat", "szerokosc_geograficzna"],
+    longitude: ["longitude", "lon", "lng", "dlugosc_geograficzna"]
 };
 
 function normalizeKey(key) {
@@ -104,6 +106,15 @@ function findImageValue(value) {
     return null;
 }
 
+function getOccurrenceValue(record, field) {
+    const occurrence = Array.isArray(record?.occurrence) ? record.occurrence[0] : record?.occurrence;
+    return occurrence?.[field] ?? null;
+}
+
+function getMapCoordinate(record, index) {
+    return record?.map?.features?.[0]?.geometry?.coordinates?.[index] ?? null;
+}
+
 function normalizeImageUrl(value) {
     if (typeof value !== "string") {
         return null;
@@ -170,17 +181,43 @@ function toDisplayValue(value, field) {
 
 function normalizeEvent(record) {
     const image = getFieldValue(record, FIELD_ALIASES.image) ?? findImageValue(record);
+    const from = getFieldValue(record, FIELD_ALIASES.from) ?? getOccurrenceValue(record, "from");
+    const to = getFieldValue(record, FIELD_ALIASES.to) ?? getOccurrenceValue(record, "to");
+    const latitude = getFieldValue(record, FIELD_ALIASES.latitude) ?? getMapCoordinate(record, 1);
+    const longitude = getFieldValue(record, FIELD_ALIASES.longitude) ?? getMapCoordinate(record, 0);
 
     return Object.fromEntries(
         Object.entries(FIELD_ALIASES).map(([field, aliases]) => [
             field,
-            toDisplayValue(field === "image" ? image : getFieldValue(record, aliases), field)
+            field === "from"
+                ? toDisplayValue(from, field)
+                : field === "to"
+                    ? toDisplayValue(to, field)
+                    : field === "latitude" || field === "longitude"
+                        ? Number.parseFloat(field === "latitude" ? latitude : longitude)
+                        : toDisplayValue(field === "image" ? image : getFieldValue(record, aliases), field)
         ])
     );
 }
 
 export async function FetchData() {
-    const response = await fetch("/api/events", {
+    const from = new Date();
+    const to = new Date(from);
+    to.setDate(to.getDate() + 7);
+
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+
+    const params = new URLSearchParams({
+        from: formatDate(from),
+        to: formatDate(to)
+    });
+
+    const response = await fetch(`/api/events?${params}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

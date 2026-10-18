@@ -1,111 +1,190 @@
 main {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    height: 70vh;
-    margin-top: 40px;
+    justify-content: center;
+    gap: 24px;
+    width: 100%;
+    min-height: 0;
+    margin: 0 auto 24px;
+    padding: 8px 0;
 }
 
 main #cards-div {
     position: relative;
-    width: 40%;
-    height: 100%;
-    margin: 20px;
-    border: 1px solid white;
-    border-radius: 25px;
-    box-shadow: 0 0 20px deepskyblue;
+    width: min(560px, calc(100vw - 32px));
+    height: min(812px, calc(100vh - 220px));
+    min-height: 380px;
+    margin: 0;
     overflow: hidden;
-    background: #171717;
+    border-radius: 50px;
+    background: #2c0712;
 }
 
 .event-card {
     position: absolute;
     inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(12px, 2vh, 20px);
     overflow: hidden;
-    background: linear-gradient(145deg, #333, #111);
+    padding: 20px;
+    border-radius: 50px;
+    background: #871638;
+    color: white;
     animation: card-arrive 500ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+    font-family: Inter, sans-serif;
+    touch-action: pan-y;
+    user-select: none;
+    cursor: grab;
+    transition: transform 420ms cubic-bezier(0.2, 0.75, 0.25, 1), opacity 420ms ease;
 }
 
-.event-card-image {
+.event-card:active {
+    cursor: grabbing;
+}
+
+.event-card-shadow {
     position: absolute;
-    inset: 0;
     z-index: 0;
+    inset: 0;
+    border-radius: 50px;
+    background: #2c0712;
+    transform: translate3d(12px, 56px, 0) scale(0.956, 0.952);
+    transform-origin: top left;
+}
+
+.event-card-shadow.is-promoting {
+    background: #871638;
+    transform: translate3d(0, 0, 0) scale(1);
+    transition: transform 420ms cubic-bezier(0.2, 0.75, 0.25, 1), background-color 420ms ease;
+}
+
+.event-card-image,
+.event-card-image-placeholder {
+    position: relative;
+    display: block;
+    flex: 0 0 56.5%;
     width: 100%;
-    height: 100%;
+    min-height: 0;
+    border-radius: 45px;
+    background: #2c0712;
     object-fit: cover;
     animation: image-arrive 800ms ease-out both;
 }
 
-.event-card-image.image-load-failed {
-    display: none;
+.event-card-image-placeholder {
+    background: #2c0712;
 }
 
-.event-card::after {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    content: "";
-    pointer-events: none;
-    background: linear-gradient(transparent 25%, rgb(0 0 0 / 85%) 100%);
+.event-card-image.image-load-failed {
+    visibility: hidden;
 }
 
 .event-card-content {
-    position: absolute;
+    position: relative;
     z-index: 2;
-    inset: auto 0 0;
-    max-height: 100%;
-    padding: 28px;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0;
     color: white;
+    font-family: Inter, sans-serif;
 }
 
 .event-card-content.is-expanded {
-    inset: 0;
+    overflow-y: auto;
+}
+
+.event-card-summary {
     display: flex;
+    flex: 0 0 auto;
     flex-direction: column;
-    justify-content: flex-end;
-    background: linear-gradient(transparent 0%, rgb(0 0 0 / 90%) 35%);
-    animation: details-backdrop-in 250ms ease-out both;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.event-location-label {
+    color: #fff7f0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1;
+    text-transform: uppercase;
 }
 
 .event-card-summary h1 {
-    margin: 8px 0;
-    font-size: clamp(1.4rem, 3vw, 2rem);
-}
-
-.event-category {
-    display: inline-block;
-    padding: 6px 10px;
-    border: 1px solid rgb(255 255 255 / 65%);
-    border-radius: 20px;
-    font-size: 0.8rem;
-}
-
-.event-description {
-    display: -webkit-box;
-    overflow: hidden;
-    margin: 8px 0;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-}
-
-.see-more-button {
-    padding: 8px 0;
-    border: 0;
-    background: transparent;
-    color: white;
-    font: inherit;
+    margin: 0;
+    font-size: 32px;
     font-weight: 700;
-    text-decoration: underline;
-    cursor: pointer;
+    line-height: 1;
+    overflow-wrap: anywhere;
+}
+
+.event-date-row {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+    color: #fff7f0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.event-date-row img {
+    flex: 0 0 auto;
+}
+
+.event-distance {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 20px;
+    border-radius: 999px;
+    background: #ebd4cb;
+    color: #871638;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.event-card-footer {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    margin-top: auto;
+    padding-top: 14px;
 }
 
 .event-details {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-top: 14px;
     overflow-y: auto;
-    margin-top: 12px;
     padding-top: 8px;
-    border-top: 1px solid rgb(255 255 255 / 45%);
+    border-top: 1px solid rgb(255 247 240 / 55%);
     animation: details-in 300ms ease-out both;
+}
+
+.event-card-content.is-expanded .event-card-footer {
+    order: 1;
+    margin-top: 14px;
+    padding-top: 0;
+}
+
+.event-card-content.is-expanded .event-details {
+    order: 2;
+    flex: 0 0 auto;
+    overflow: visible;
 }
 
 .event-detail {
@@ -114,86 +193,198 @@ main #cards-div {
     overflow-wrap: anywhere;
 }
 
+.event-card a {
+    color: #f1e2da;
+    text-underline-offset: 3px;
+    transition: color 160ms ease;
+}
+
+.event-card a:hover,
+.event-card a:focus-visible {
+    color: #ff004d;
+}
+
 .cards-message {
     display: grid;
     height: 100%;
     margin: 0;
     padding: 24px;
     place-items: center;
-    color: white;
+    color: #fff7f0;
     text-align: center;
 }
 
-main #buttons-div {
+main #cards-div.liked-events-container {
+    overflow-y: auto;
+    background: #2c0712;
+}
+
+.liked-events-list {
+    padding: 20px 24px 28px;
+    color: white;
+    font-family: Inter, sans-serif;
+}
+
+.liked-date-group + .liked-date-group {
+    margin-top: 20px;
+}
+
+.liked-date-group h2 {
+    margin: 0 0 4px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgb(235 212 203 / 55%);
+    color: #ebd4cb;
+    font-size: 1rem;
+}
+
+.liked-date-group ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.liked-event-item {
+    padding: 14px 0;
+    border-bottom: 1px solid rgb(255 247 240 / 18%);
+}
+
+.liked-event-heading {
     display: flex;
-    background: black;
-    width: 12vh;
-    border: 8px double white;
-    border-radius: 30px;
-    padding: 20px;
-    box-shadow: 0 0 20px deepskyblue;
-    transition: 0.3s ease-in-out all;
-}
-main #buttons-div:hover {
-    transform: scale(0.9);
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
 }
 
-main #buttons-div img {
-    width: 30px;
-    height: 30px;
-    padding: 5px;
+.liked-event-button {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
 }
 
-.liked-navigation-label {
+.liked-event-button:focus-visible {
+    border-radius: 4px;
+    outline: 2px solid #ebd4cb;
+    outline-offset: 4px;
+}
+
+.liked-event-button:hover .liked-event-title {
+    color: #ebd4cb;
+}
+
+.liked-event-title {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.liked-event-category {
+    flex: 0 0 auto;
+    color: rgb(255 247 240 / 68%);
+    font-size: 0.75rem;
+}
+
+.liked-event-time,
+.liked-event-location {
+    display: block;
+    margin: 6px 0 0;
+    color: rgb(255 247 240 / 82%);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.card-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin: 0;
+}
+
+.liked-view-back-button {
+    min-height: 48px;
+    padding: 0 22px;
+    border: 1px solid rgb(255 247 240 / 75%);
+    border-radius: 999px;
+    background: #2c0712;
+    color: #fff7f0;
+    font: 600 0.95rem Inter, sans-serif;
+    cursor: pointer;
+    transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.liked-view-back-button:hover,
+.liked-view-back-button:focus-visible {
+    background: #5b102b;
+}
+
+.liked-view-back-button:focus-visible {
+    outline: 2px solid #fff7f0;
+    outline-offset: 4px;
+}
+
+.liked-view-back-button:active {
+    transform: scale(0.97);
+}
+
+.card-action-button {
+    position: relative;
     display: grid;
-    width: 40px;
-    height: 40px;
+    flex: 0 0 auto;
     place-items: center;
-    color: white;
-    font-size: 2rem;
-    line-height: 1;
-}
-
-main #buttons-div #red-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: red;
-    color: white;
-    border: 1px solid white;
-    border-radius: 30px;
-    box-shadow: 0 0 8px white;
-    margin-right: auto;
-    transition: 0.2s ease-in-out all;
-}
-main #buttons-div #red-btn:hover {
-    transform: scale(1.4);
-    box-shadow: 0 0 20px white;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
     cursor: pointer;
+    transition: transform 180ms ease, filter 180ms ease;
 }
 
-main #buttons-div #green-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: green;
-    color: white;
-    border: 1px solid white;
-    border-radius: 30px;
-    box-shadow: 0 0 8px white;
-    transition: 0.2s ease-in-out all;
-}
-main #buttons-div #green-btn:hover {
-    transform: scale(1.4);
-    box-shadow: 0 0 20px white;
-    cursor: pointer;
+.dislike-action,
+.more-info-action {
+    width: 80px;
+    height: 80px;
 }
 
-main #buttons-div button:active {
-    transform: scale(0.9);
+.like-action {
+    width: 100px;
+    height: 100px;
 }
 
-main #buttons-div button:disabled {
+.dislike-left,
+.dislike-right {
+    position: absolute;
+    top: 22px;
+}
+
+.dislike-left {
+    left: 25.26px;
+}
+
+.dislike-right {
+    left: 19.33px;
+}
+
+.card-action-button:hover:not(:disabled) {
+    transform: scale(1.06);
+    filter: brightness(1.08);
+}
+
+.card-action-button:focus-visible {
+    outline: 2px solid #fff7f0;
+    outline-offset: 5px;
+}
+
+.card-action-button:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.card-action-button:disabled {
     opacity: 0.45;
     cursor: not-allowed;
 }
@@ -201,11 +392,9 @@ main #buttons-div button:disabled {
 @keyframes card-arrive {
     from {
         opacity: 0;
-        transform: translateY(24px) scale(0.96) rotate(1deg);
     }
     to {
         opacity: 1;
-        transform: translateY(0) scale(1) rotate(0);
     }
 }
 
@@ -217,15 +406,6 @@ main #buttons-div button:disabled {
     to {
         opacity: 1;
         transform: scale(1);
-    }
-}
-
-@keyframes details-backdrop-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
     }
 }
 
@@ -242,16 +422,61 @@ main #buttons-div button:disabled {
 
 @media (max-width: 700px) {
     main {
-        height: 70vh;
-        margin-top: 20px;
+        gap: 16px;
+        margin-bottom: 16px;
     }
 
     main #cards-div {
-        width: min(90%, 440px);
+        width: min(560px, calc(100vw - 24px));
+        height: min(812px, calc(100vh - 190px));
+        min-height: 360px;
     }
 
-    .event-card-content {
-        padding: 20px;
+    .event-card {
+        gap: 12px;
+        padding: 16px;
+        border-radius: 38px;
+    }
+
+    .event-card-shadow {
+        border-radius: 38px;
+    }
+
+    .event-card-image,
+    .event-card-image-placeholder {
+        border-radius: 32px;
+    }
+
+    .event-card-summary h1 {
+        font-size: 32px;
+    }
+
+    .event-location-label {
+        font-size: 16px;
+    }
+
+    .event-date-row {
+        font-size: 16px;
+    }
+
+    .event-distance {
+        min-height: 40px;
+        font-size: 1rem;
+    }
+
+    .card-actions {
+        gap: 12px;
+    }
+
+    .liked-events-list {
+        padding: 16px 18px 22px;
+    }
+}
+
+@media (max-height: 700px) {
+    main #cards-div {
+        height: calc(100vh - 200px);
+        min-height: 340px;
     }
 }
 

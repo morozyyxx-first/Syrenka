@@ -15,8 +15,8 @@ function Header({ activeView, likedCount, onToggleView }) {
                 aria-pressed={activeView === 'liked'}
                 onClick={onToggleView}
             >
-                <img src={Heart_img} alt="icon" className="header-btn-img" />
-                <span>{activeView === 'liked' ? 'Discover' : 'Liked'}</span>
+                <img src={Heart_img} alt="Polubione" className="header-btn-img" />
+                <span>{activeView === 'liked' ? 'Odkrywaj' : 'Polubione'}</span>
                 <span className="liked-count">{likedCount}</span>
             </button>
         </header>

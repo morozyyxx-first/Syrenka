@@ -1,13 +1,29 @@
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Fira+Code:wght@300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Fira+Code:wght@300..700&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 * {
-  font-family: 'Comfortaa', sans-serif;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
 }
 
 body {
-  background: black;
+  min-height: 100vh;
+  background: #4e1023;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  font-family: 'Comfortaa', sans-serif;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
 }
